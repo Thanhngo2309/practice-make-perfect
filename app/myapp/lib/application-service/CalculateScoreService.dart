@@ -22,14 +22,14 @@ class CalculateScoreService {
       List<SelectedAnswer> selectedAnswers, List<Answer> answers) {
     Map<String, String> correctAnswerMap = {};
 
-    answers.forEach((answer) {
+    for (var answer in answers) {
       correctAnswerMap[answer.questionId] = answer.correctAnswer;
-    });
+    }
 
     int correctNumbers = 0;
     int unanswerNumbes = 0;
     int incorrectNumbers = 0;
-    selectedAnswers.forEach((selectedAnswer) {
+    for (var selectedAnswer in selectedAnswers) {
       String? correctAnswer = correctAnswerMap[selectedAnswer.questionId];
       if (correctAnswer != null &&
           selectedAnswer.isCorrectAnswer(correctAnswer)) {
@@ -39,9 +39,9 @@ class CalculateScoreService {
       } else {
         incorrectNumbers++;
       }
-    });
+    }
 
-    return Result(correctNumbers.toString() + "/30", correctNumbers,
-        incorrectNumbers, unanswerNumbes);
+    return Result(
+        "$correctNumbers/30", correctNumbers, incorrectNumbers, unanswerNumbes);
   }
 }

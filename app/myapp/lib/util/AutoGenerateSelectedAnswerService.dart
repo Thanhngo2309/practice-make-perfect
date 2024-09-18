@@ -2,7 +2,7 @@ import '../model/Question.dart';
 import '../model/SelectedAnswer.dart';
 
 class AutoGenerateSelectedAnswerService {
-  static AutoGenerateSelectedAnswerService _instance =
+  static final AutoGenerateSelectedAnswerService _instance =
       AutoGenerateSelectedAnswerService._internal();
 
   AutoGenerateSelectedAnswerService._internal();
@@ -12,11 +12,12 @@ class AutoGenerateSelectedAnswerService {
   }
 
   Map<int, SelectedAnswer> generate(List<Question> questions, String examId) {
-    return Map.fromIterable(List.generate(questions.length, (index) => index),
-        key: (index) => index,
-        value: (index) => SelectedAnswer(
+    return {
+      for (var index in List.generate(questions.length, (index) => index))
+        index: SelectedAnswer(
             examId: examId,
             questionId: questions[index].questionId,
-            selectedAnswer: ''));
+            selectedAnswer: '')
+    };
   }
 }

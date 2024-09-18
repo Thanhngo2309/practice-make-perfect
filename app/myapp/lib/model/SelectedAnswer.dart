@@ -8,7 +8,7 @@ class SelectedAnswer {
       {required this.examId,
       required this.questionId,
       required this.selectedAnswer}) {
-    this.isCorrect = false;
+    isCorrect = false;
   }
 
   bool isCorrectAnswer(String correctAnswer) {

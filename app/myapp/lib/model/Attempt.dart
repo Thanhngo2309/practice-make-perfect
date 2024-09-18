@@ -12,7 +12,7 @@ class Attempt {
 
   Attempt(this.questions, this.selectedAnswers, this.examId) {
     attemptId = '${examId}_${DateTime.now().toIso8601String()}';
-    this.totalTime = '0';
+    totalTime = '0';
   }
 
   void setTotalTime(String totalTime) {

@@ -1,7 +1,7 @@
 import 'package:myapp/model/Answer.dart';
 
 class AnswerData {
-  static AnswerData _instance = AnswerData._internal();
+  static final AnswerData _instance = AnswerData._internal();
   AnswerData._internal();
 
   static AnswerData getInstance() {
