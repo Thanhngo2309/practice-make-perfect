@@ -10,13 +10,13 @@ class SelectedAnswerDetailWidget extends StatelessWidget {
   final Question question;
   final Answer answer;
 
-  SelectedAnswerDetailWidget(this.selectedAnswer, this.question, this.answer);
+  const SelectedAnswerDetailWidget(this.selectedAnswer, this.question, this.answer, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
             Expanded(child: Text("Quay lại")),
             Icon(Icons.favorite, color: Colors.grey),
@@ -24,7 +24,7 @@ class SelectedAnswerDetailWidget extends StatelessWidget {
         ),
       ),
       body: ConstrainedBox(
-        constraints: BoxConstraints(
+        constraints: const BoxConstraints(
           minHeight: 0,
         ),
         child: Column(
@@ -51,12 +51,12 @@ class SelectedAnswerDetailWidget extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               answer.answerDetail,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -65,14 +65,14 @@ class SelectedAnswerDetailWidget extends StatelessWidget {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return Dialog(
+              return const Dialog(
                 child: ChatWidget(),
               );
             },
           );
         },
-        child: Icon(Icons.chat),
         backgroundColor: Colors.blue,
+        child: Icon(Icons.chat),
       ),
     );
   }

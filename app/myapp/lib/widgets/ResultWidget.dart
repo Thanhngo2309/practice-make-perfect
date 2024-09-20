@@ -11,7 +11,7 @@ import 'SelectedAnswerDetailWidget.dart';
 class ResultWidget extends StatelessWidget {
   Attempt attempt;
 
-  ResultWidget(this.attempt) {
+  ResultWidget(this.attempt, {super.key}) {
     attempt.result = CalculateScoreService()
         .calculateScore(attempt.selectedAnswers, attempt.questions);
   }
@@ -24,61 +24,61 @@ class ResultWidget extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            Expanded(child: Text("Kết quả bài thi")),
+            const Expanded(child: Text("Kết quả bài thi")),
             ElevatedButton(
                 onPressed: () => retakeExam(context, attempt.examId),
-                child: Text("Làm lại"))
+                child: const Text("Làm lại"))
           ],
         ),
       ),
       body: Column(children: [
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
             children: [
               Text(
                 "Điểm : ${attempt.result.score}",
-                style: TextStyle(color: Colors.blue),
+                style: const TextStyle(color: Colors.blue),
               ),
-              SizedBox(width: 10),
-              Icon(Icons.timer, color: Colors.purple),
+              const SizedBox(width: 10),
+              const Icon(Icons.timer, color: Colors.purple),
               Text(attempt.totalTime)
             ],
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
                 "Đúng : ${attempt.result.correctNumbers}",
-                style: TextStyle(color: Colors.green),
+                style: const TextStyle(color: Colors.green),
               ),
               Text(
                 "Chưa trả lời : ${attempt.result.unanswerNumbes}",
-                style: TextStyle(color: Colors.orange),
+                style: const TextStyle(color: Colors.orange),
               ),
               Text(
                 "Sai : ${attempt.result.incorrectNumbers}",
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             ],
           ),
         ),
-        SizedBox(height: 10),
-        Center(
+        const SizedBox(height: 10),
+        const Center(
           child: Text(
             "Chạm vào câu bất kỳ để xem chi tiết",
             style: TextStyle(color: Colors.grey),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Expanded(
           child: GridView.count(
             crossAxisCount: 4,
-            children: this.attempt.selectedAnswers.asMap().entries.map((entry) {
+            children: attempt.selectedAnswers.asMap().entries.map((entry) {
               int index = entry.key;
               SelectedAnswer ans = entry.value;
               return Center(
@@ -97,7 +97,7 @@ class ResultWidget extends StatelessWidget {
                   },
                   child: Text(
                     "Câu ${index + 1}",
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               );

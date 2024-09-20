@@ -6,7 +6,7 @@ import 'QuestionListWidget.dart';
 class ExamCardWidget extends StatelessWidget {
   final Exam exam;
 
-  const ExamCardWidget({Key? key, required this.exam}) : super(key: key);
+  const ExamCardWidget({super.key, required this.exam});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class ExamCardWidget extends StatelessWidget {
         );
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         decoration: BoxDecoration(
           border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
         ),
@@ -37,11 +37,11 @@ class ExamCardWidget extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
                 _buildDetailItem(Icons.timer, '${exam.duration} phút'),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 _buildDetailItem(Icons.question_answer, '30 câu'),
               ],
             ),
@@ -55,7 +55,7 @@ class ExamCardWidget extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 16, color: Colors.grey[600]),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Text(
           text,
           style: TextStyle(color: Colors.grey[600], fontSize: 14),

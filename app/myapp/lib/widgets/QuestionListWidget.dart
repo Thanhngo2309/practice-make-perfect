@@ -15,8 +15,7 @@ class QuestionListWidget extends StatefulWidget {
   final String examId;
   final int duration;
 
-  const QuestionListWidget(this.examId, this.duration, {Key? key})
-      : super(key: key);
+  const QuestionListWidget(this.examId, this.duration, {super.key});
 
   @override
   State<QuestionListWidget> createState() => _QuestionListWidgetState();
@@ -90,11 +89,11 @@ class _QuestionListWidgetState extends State<QuestionListWidget> {
               children: [
                 Text(
                   'Câu ${currentQuestionIndex + 1}/${questions.length}',
-                  style: TextStyle(color: Colors.orange),
+                  style: const TextStyle(color: Colors.orange),
                 ),
                 Text(TimeConvert.secondsToHHMMSS(remainingSeconds)),
                 ElevatedButton(
-                    onPressed: () => submitExam(), child: Text("Nộp bài")),
+                    onPressed: () => submitExam(), child: const Text("Nộp bài")),
               ],
             ),
           ),
@@ -108,7 +107,7 @@ class _QuestionListWidgetState extends State<QuestionListWidget> {
   }
 
   void _startCountdown() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (remainingSeconds > 0) {
           remainingSeconds--;

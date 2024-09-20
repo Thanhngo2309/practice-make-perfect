@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../model/Message.dart';
 
 class ChatWidget extends StatefulWidget {
-  const ChatWidget({Key? key}) : super(key: key);
+  const ChatWidget({super.key});
 
   @override
   _ChatWidgetState createState() => _ChatWidgetState();
@@ -85,7 +85,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                         ? Alignment.centerRight
                         : Alignment.centerLeft,
                     child: Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color:
                             message.isSender ? Colors.blue[100] : Colors.white,
@@ -100,8 +100,8 @@ class _ChatWidgetState extends State<ChatWidget> {
           ),
         ),
         if (_isResponding)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Text("AI is typing...",
                 style: TextStyle(fontStyle: FontStyle.italic)),
           ),

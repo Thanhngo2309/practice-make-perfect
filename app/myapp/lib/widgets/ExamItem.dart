@@ -71,7 +71,7 @@ class ExamItemState extends State<ExamItem> {
             const SizedBox(width: 10),
             const Icon(Icons.star, size: 16),
             const SizedBox(width: 4),
-            Text('${widget.exam.subject.name}'),
+            Text(widget.exam.subject.name),
             const SizedBox(width: 10),
             widget.withHeartIcon
                 ? GestureDetector(
