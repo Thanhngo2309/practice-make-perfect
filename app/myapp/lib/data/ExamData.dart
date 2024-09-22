@@ -1,45 +1,39 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myapp/data/FirebaseFirestoreInst.dart';
 import 'package:myapp/model/Exam.dart';
 import 'package:myapp/model/Subject.dart';
 
 class ExamData {
   static List<Exam> exams = [
     Exam(
-        "SGDVDT-HD-Toan-20/12",
         "Đề thi thử Môn Toán 2023 - Sở giáo dục và đào tạo Hải Dương",
         Subject.math,
         "SGDVDT-HD"),
     Exam(
-        "SGDVDT-HN-Toan-12/11",
         "Đề thi thử Môn Toán 2023 - Sở giáo dục và đào tạo Hà Nội,",
         Subject.math,
         "SGDVDT-HN"),
     Exam(
-        "SGDVDT-HD-Ly-20/12",
         "Đề thi thử Môn Lý 2023 - Sở giáo dục và đào tạo Hải Dương",
         Subject.physics,
         "SGDVDT-HD"),
     Exam(
-        "SGDVDT-HD-Hoa-20/12",
         "Đề thi thử Môn Hóa 2023 - Sở giáo dục và đào tạo Hải Dương",
         Subject.chemistry,
         "SGDVDT-HD"),
     Exam(
-        "SGDVDT-HD-Sinh-20/12",
         "Đề thi thử Môn Sinh 2023 - Sở giáo dục và đào tạo Hải Dương",
         Subject.biology,
         "SGDVDT-HD"),
     Exam(
-        "SGDVDT-HD-Van-20/12",
         "Đề thi thử Môn Văn 2023 - Sở giáo dục và đào tạo Hải Dương",
         Subject.literature,
         "SGDVDT-HD"),
     Exam(
-        "SGDVDT-HD-Su-20/12",
         "Đề thi thử Môn Sử 2023 - Sở giáo dục và đào tạo Hải Dương",
         Subject.history,
         "SGDVDT-HD"),
     Exam(
-        "SGDVDT-HD-Dia-20/12",
         "Đề thi thử Môn Địa 2023 - Sở giáo dục và đào tạo Hải Dương",
         Subject.geography,
         "SGDVDT-HD"),
@@ -62,5 +56,18 @@ class ExamData {
 
   List<Exam> getAllExams() {
     return exams;
+  }
+
+  void save(Exam exam) {
+    FirebaseFirestore db = FirestoreInst.getInstance();
+    db.collection("exams").add({
+      "name": exam.name,
+      "subject": exam.subject.toString(),
+      "examId": exam.examId,
+    }).then((value) {
+      print("Exam added with ID: ${value.id}");
+    }).catchError((error) {
+      print("Failed to add exam: $error");
+    });
   }
 }

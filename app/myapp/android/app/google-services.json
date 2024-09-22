@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "216392954827",
+    "project_id": "baitaplon-34432",
+    "storage_bucket": "baitaplon-34432.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216392954827:android:1d95de338c80f970cefc4e",
+        "android_client_info": {
+          "package_name": "com.example.myap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv7Y3JFz0i9VZMdbxHzRQK76nmKSk_q_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216392954827:android:d434d5dc9c92e035cefc4e",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv7Y3JFz0i9VZMdbxHzRQK76nmKSk_q_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

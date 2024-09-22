@@ -1,8 +1,9 @@
 import 'Choice.dart';
 
+
 class Question {
   String examId;
-  String questionId;
+  late String questionId;
   String questionText;
   late List<Choice> choices;
   int number;
@@ -10,12 +11,12 @@ class Question {
 
   Question({
     required this.examId,
-    required this.questionId,
     required this.questionText,
     required List<String> choiceContent,
     required this.number,
     required this.imagePath,
   }) {
+    questionId = examId + number.toString();
     if (choiceContent.length != 4) {
       throw Exception("Too many choices");
     }
