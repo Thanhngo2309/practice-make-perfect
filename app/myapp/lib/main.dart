@@ -5,6 +5,9 @@ import 'package:myapp/model/Subject.dart';
 import 'package:myapp/widgets/AddExam.dart';
 import 'package:myapp/widgets/ChatScreen.dart';
 import 'package:myapp/widgets/ExamScreenWidget.dart';
+import 'package:myapp/widgets/HomeWidget.dart';
+import 'package:myapp/widgets/LoginWidget.dart';
+import 'package:myapp/widgets/RegisterWidget.dart';
 import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo binding đã được khởi tạo
@@ -37,10 +40,11 @@ class MyApp extends StatelessWidget {
         }
         return null;
       },
-      initialRoute: '/',
+      initialRoute: '/signup',
       routes: {'/chat': (context) => ChatSreen(),
-      '/': (context) => AddExam()},
-      // home: HomeScreen(),
+      '/': (context) =>HomeScreen(),
+      '/signin': (context)=> LoginPage(),
+      '/signup': (context)=>SignupPage()},
       debugShowCheckedModeBanner: false,
     );
   }

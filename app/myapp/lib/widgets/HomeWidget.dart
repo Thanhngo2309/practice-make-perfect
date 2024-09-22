@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/service/AuthService.dart';
 
 import '../model/Subject.dart';
 import 'SubjectItem.dart';
@@ -22,13 +24,37 @@ class HomeScreen extends StatelessWidget {
     Subject.english: 'assets/images/eng.png',
   };
 
+  User? user = AuthService.currentUser;
+
   HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EduX'),
+        title: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'EduX',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "Hello 🥳 " + (user?.displayName ?? "Guest") + " Wellcome back 🎉🎉🎉",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blueAccent,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
