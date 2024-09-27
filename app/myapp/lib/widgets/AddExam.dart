@@ -41,30 +41,58 @@ class _AddExam extends State<AddExam> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Chọn Môn Học')),
+      appBar: AppBar(title: const Text('Thêm mới bài kiểm tra')),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.green[300]!, Colors.green[100]!],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        decoration: const BoxDecoration(color: Colors.white),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text("Thông tin chi tiết", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+              const Text("Lưu ý:  Điền đầy đủ thông tin cho các trường có dấu hoa thị", style: TextStyle(color: Colors.red, fontSize: 12, fontStyle: FontStyle.italic),),
+              const SizedBox(height: 20,),
+              const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Môn học",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    "*", 
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5,),
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'Chọn Môn Học',
-                  border: OutlineInputBorder(),
                   filled: true,
                   fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 210, 210, 210)
+                    )
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(color: Colors.blue),
+                  ),
                 ),
                 items: subjects.map((String subject) {
                   return DropdownMenuItem<String>(
                     value: subject,
-                    child: Text(subject),
+                    child: Text(
+                      subject,
+                      style: const TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -72,18 +100,49 @@ class _AddExam extends State<AddExam> {
                     setState(() {
                       selectedSubject = SubjectConverter.stringToSubject(value);
                       duration = (selectedSubject == Subject.math) ? 90 :
-                                 (selectedSubject == Subject.literature) ? 180 : 60;
+                                (selectedSubject == Subject.literature) ? 180 : 60;
                     });
                   }
                 },
+                icon: const Icon(Icons.arrow_drop_down), // Biểu tượng mũi tên cuộn xuống
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Tên môn học",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    "*", 
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5,),
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Tên',
+                  prefixIcon: const Icon(Icons.add),
+                  hintText: 'Tên',
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(color: Color.fromARGB(255, 210, 210, 210)),
+                  ),
+                  enabledBorder:  OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(color: Color.fromARGB(255, 210, 210, 210)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(color: Colors.blue),
+                  ),
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -91,43 +150,83 @@ class _AddExam extends State<AddExam> {
                   });
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Môn học",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(width: 5),
+                ],
+              ),
+              const SizedBox(height: 5,),
               TextField(
-                maxLines: 10,
+                maxLines: 5,
                 decoration: InputDecoration(
-                  labelText: 'Mô Tả',
+                  hintText: 'Mô tả',
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(),
+                  enabledBorder:  OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(color: Color.fromARGB(255, 210, 210, 210)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(color: Colors.blue),
+                  ),
                 ),
                 onChanged: (value) {
                   setState(() {
                     description = value;
                   });
                 },
+                scrollController: ScrollController(initialScrollOffset: 50.0), 
               ),
-              SizedBox(height: 20),
-              Text("Thời gian: ${duration} phút"),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  // Check if all fields are filled
-                  if (selectedSubject == null || name.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Vui lòng điền đầy đủ thông tin!'))
+              const SizedBox(height: 20),
+              Center(child: Text("Thời gian: $duration phút", textAlign: TextAlign.center,),),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:[ 
+                  ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.red, 
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5)
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                  ),
+                  child: const Text("Xoá", style: TextStyle(color: Colors.white),),
+                  ),
+                  const SizedBox(width: 10,),
+                  ElevatedButton(
+                  onPressed: () {
+                    if (selectedSubject == null || name.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin!')),
+                      );
+                      return;
+                    }
+
+                    Exam exam = Exam(name, selectedSubject!, "");
+                    ExamData.getInstance().save(exam);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => QuestionEditor(exam: exam)),
                     );
-                    return;
-                  }
-                  
-                  print('Tên: $name, Mô Tả: $description, Môn Học: $selectedSubject');
-                  Exam exam = Exam(name,selectedSubject!,"");
-                  ExamData.getInstance().save(exam);
-                  Navigator.push(
-                    context, 
-                    MaterialPageRoute(builder: (context) => QuestionEditor(exam: exam))
-                  );
-                },
-                child: Icon(Icons.navigate_next),
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                  ),
+                  child: const Text(
+                    'Tiếp theo',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),]
               )
             ],
           ),

@@ -1,3 +1,4 @@
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/service/AuthService.dart';
@@ -30,39 +31,40 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'EduX',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(
-                "Hello 🥳 " + (user?.displayName ?? "Guest") + " Wellcome back 🎉🎉🎉",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.blueAccent,
-                ),
+              OutlinedButton(
+                onPressed: () {
+                  user != null ? AuthService.signOut(context) : Navigator.pushNamed(context, "/signin");
+                }, 
+                child: Text(user != null ? "Đăng xuất" : "Đăng nhập")
               ),
             ],
           ),
         ),
       ),
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(color: Color.fromARGB(255, 245, 244, 244)),
+        child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            crossAxisCount: 3,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
           ),
           itemCount: subjectImages.length,
           itemBuilder: (context, index) {
@@ -71,6 +73,7 @@ class HomeScreen extends StatelessWidget {
             return SubjectItem(subject: subject, iconPath: iconPath);
           },
         ),
+      ),
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20),

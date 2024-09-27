@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/model/dto/ExamResponse.dart';
 
 import '../model/Exam.dart';
 import 'QuestionListWidget.dart';
 
 class ExamCardWidget extends StatelessWidget {
-  final Exam exam;
+  final ExamResponse exam;
 
   const ExamCardWidget({super.key, required this.exam});
 

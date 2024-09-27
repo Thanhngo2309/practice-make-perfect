@@ -41,3 +41,26 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+# Bỏ qua file firebase.json
+firebase.json
+
+# Bỏ qua file index.html trong thư mục web
+web/index.html
+
+# Bỏ qua thư mục res trong android
+android/app/src/main/res/
+
+# Bỏ qua file firebase_options.dart trong thư mục lib
+lib/firebase_options.dart
+
+
+# Bỏ qua file firebase.json
+firebase.json
+
+# Bỏ qua file firebase_options.dart trong thư mục lib
+lib/firebase_options.dart
+
+# Bỏ qua file google-services.json
+android/app/google-services.json

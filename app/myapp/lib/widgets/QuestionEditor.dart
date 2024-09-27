@@ -1,11 +1,16 @@
-import 'dart:io';
-
+import 'dart:io' if (dart.library.html) 'dart:html' as html;
+import 'dart:typed_data';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:myapp/data/AnswerData.dart';
 import 'package:myapp/data/QuestionData.dart';
+import 'package:myapp/model/Answer.dart';
 import 'package:myapp/model/Exam.dart';
 import 'package:myapp/model/Question.dart';
-import 'package:firebase_storage/firebase_storage.dart'; 
+import 'package:myapp/util/AutoGenerateAnswer.dart';
 
 class QuestionEditor extends StatefulWidget {
   final String routeName = '/question';
@@ -20,10 +25,15 @@ class QuestionEditor extends StatefulWidget {
 class _QuestionEditorState extends State<QuestionEditor> {
   TextEditingController _questionController = TextEditingController();
   List<TextEditingController> _answerControllers = List.generate(4, (index) => TextEditingController());
+  TextEditingController _explainController = TextEditingController();
   late List<Question> questions;
-  late Map<String, File> tempImageQuestion; // Map<questionId, imageFile>
-  late Map<String, List<File>> tempImageChoice; // Map<question, List<imageFile>>
+  late Map<String, Uint8List> tempImageQuestion; // Map<questionId, imageData>
+  late Map<String, List<Uint8List>> tempImageChoice; // Map<question, List<imageData>>
+  List<bool> showTextField = List.generate(4, (index)=>false);
   int currentIndex = 0;
+  int? _correctAnswer;
+  late List<Answer> answers;
+  late Question currentQuestion;
 
   @override
   void initState() {
@@ -35,9 +45,21 @@ class _QuestionEditorState extends State<QuestionEditor> {
       number: index + 1,
       imagePath: '',
     ));
+    answers = AutoGenerateAnswer.generate(questions);
+    currentQuestion = questions[currentIndex];
     tempImageQuestion = {};
     tempImageChoice = {};
+    _correctAnswer = 0;
     _loadCurrentQuestion();
+  }
+
+  void changeCorrectAnswer(int correctAnswer){
+    setState(() {
+      this._correctAnswer = correctAnswer;
+      showTextField = List.filled(4, false);
+      showTextField[correctAnswer] = true;      
+    });
+
   }
 
   Future<void> _pickImage(int answerIndex) async {
@@ -45,22 +67,20 @@ class _QuestionEditorState extends State<QuestionEditor> {
       final ImagePicker _picker = ImagePicker();
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        print("Image selected: ${image.path}");
-        if (answerIndex == -1) {
-          // Thêm ảnh vào tempImageQuestion
-          tempImageQuestion[widget.exam.examId] = File(image.path);
-          print("Image added to tempImageQuestion for examId ${widget.exam.examId}: ${tempImageQuestion[widget.exam.examId]}");
-        } else {
-          // Thêm ảnh vào tempImageChoice
-          if (!tempImageChoice.containsKey(widget.exam.examId)) {
-            tempImageChoice[widget.exam.examId] = [];
+        final bytes = await image.readAsBytes();  // Read the image
+        if (answerIndex == -1) { 
+          setState(() {
+            tempImageQuestion[currentQuestion.questionId] = bytes;
+          });
+        } else { 
+          if (!tempImageChoice.containsKey(currentQuestion.questionId)) {
+            setState(() {
+              tempImageChoice[currentQuestion.questionId] = List.filled(4, Uint8List(0));
+            });
           }
-          // Đảm bảo danh sách đủ dài để thêm ảnh
-          while (tempImageChoice[widget.exam.examId]!.length <= answerIndex) {
-            tempImageChoice[widget.exam.examId]!.add(File('')); // Thêm một File rỗng nếu cần
-          }
-          tempImageChoice[widget.exam.examId]![answerIndex] = File(image.path);
-          print("Image added to tempImageChoice for examId ${widget.exam.examId}, answerIndex $answerIndex: ${tempImageChoice[widget.exam.examId]}");
+          setState(() {
+            tempImageChoice[currentQuestion.questionId]![answerIndex] = bytes; // Save the image to the specific choice index
+          });
         }
       } else {
         print("No image selected.");
@@ -73,41 +93,29 @@ class _QuestionEditorState extends State<QuestionEditor> {
   Future<void> _uploadImages() async {
     for (var question in questions) {
       try {
-        // In ra nội dung của tempImageQuestion
-        print("tempImageQuestion: ${tempImageQuestion.toString()}");
-
-        // Upload ảnh cho câu hỏi
-        if (tempImageQuestion.containsKey(question.examId)) {
-          File imageFile = tempImageQuestion[question.examId]!;
-          String filePath = 'questions/${question.examId}/${DateTime.now().millisecondsSinceEpoch}_${imageFile.path.split('/').last}';
-          await FirebaseStorage.instance.ref(filePath).putFile(imageFile);
+        if (tempImageQuestion.containsKey(question.questionId)) {
+          Uint8List imageData = tempImageQuestion[question.questionId]!;
+          String filePath = 'questions/${question.questionId}/${DateTime.now().millisecondsSinceEpoch}.png';
+          // Lưu dữ liệu hình ảnh vào Firebase Storage
+          await FirebaseStorage.instance.ref(filePath).putData(imageData,SettableMetadata(contentType: 'image/jpeg'));
           question.imagePath = await FirebaseStorage.instance.ref(filePath).getDownloadURL();
         } else {
           print("No image for question ${question.number} in tempImageQuestion.");
         }
 
-        // In ra nội dung của tempImageChoice
-        print("tempImageChoice: ${tempImageChoice.toString()}");
-
-        // Upload ảnh cho đáp án
-        if (tempImageChoice.containsKey(question.examId)) {
-          List<Future<void>> uploads = []; // Danh sách Future để upload song song
-
+        if (tempImageChoice.containsKey(question.questionId)) {
+          List<Future<void>> uploads = [];
           for (int i = 0; i < question.choices.length; i++) {
-            if (tempImageChoice[question.examId]!.length > i) {
-              File imageFile = tempImageChoice[question.examId]![i];
-              String filePath = 'choices/${question.examId}/${DateTime.now().millisecondsSinceEpoch}_${imageFile.path.split('/').last}';
-
-              // Thêm Future vào danh sách
+            if (tempImageChoice[question.questionId]!.length > i) {
+              Uint8List imageData = tempImageChoice[question.questionId]![i];
+              String filePath = 'choices/${question.questionId}-i/${DateTime.now().millisecondsSinceEpoch}.png';
               uploads.add(
-                FirebaseStorage.instance.ref(filePath).putFile(imageFile).then((_) async {
+                FirebaseStorage.instance.ref(filePath).putData(imageData,SettableMetadata(contentType: 'image/jpeg')).then((_) async {
                   question.choices[i].image = await FirebaseStorage.instance.ref(filePath).getDownloadURL();
                 })
               );
             }
           }
-
-          // Đợi tất cả upload của đáp án hoàn thành
           await Future.wait(uploads);
         } else {
           print("No images for question ${question.number} in tempImageChoice.");
@@ -119,6 +127,7 @@ class _QuestionEditorState extends State<QuestionEditor> {
   }
 
   void _saveToDb() async {
+    _saveCurrentQuestion();
     await _uploadImages();
     questions.forEach((question) {
       if (question.questionText.isEmpty) {
@@ -126,15 +135,26 @@ class _QuestionEditorState extends State<QuestionEditor> {
       }
     });
 
+    answers.forEach((answer){
+      if(answer.answerDetail.isEmpty){
+        print("Answer details could not be empty");
+      };
+    });
+
     QuestionData().saveAll(questions);
+    AnswerData.getInstance().saveAll(answers);
     print("Questions saved to database.");
   }
 
   void _nextQuestion() {
     _saveCurrentQuestion();
+    _saveCurrentAnswer();
     if (currentIndex < questions.length - 1) {
       setState(() {
+        showTextField = List.filled(4, false);
         currentIndex++;
+        currentQuestion = questions[currentIndex];
+        answers[currentIndex].correctAnswer == '' ? _correctAnswer=-1 : _correctAnswer = answers[currentIndex].correctAnswer.codeUnitAt(0) - 'A'.codeUnitAt(0);
         _loadCurrentQuestion();
       });
     } else {
@@ -147,6 +167,8 @@ class _QuestionEditorState extends State<QuestionEditor> {
       _saveCurrentQuestion();
       setState(() {
         currentIndex--;
+        currentQuestion = questions[currentIndex];
+        _correctAnswer = answers[currentIndex].correctAnswer.codeUnitAt(0) - 'A'.codeUnitAt(0);
         _loadCurrentQuestion();
       });
     }
@@ -174,113 +196,222 @@ class _QuestionEditorState extends State<QuestionEditor> {
     }
   }
 
+  void _saveCurrentAnswer(){
+    answers[currentIndex].answerDetail = _explainController.text;
+    answers[currentIndex].correctAnswer = String.fromCharCode(_correctAnswer! + 65);
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Question Editor")),
+      appBar: AppBar(title: const Text("Question Editor")),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(10),
+        child: Container(
+          decoration: const BoxDecoration(color: Colors.white),
+          child: 
+           Padding(
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                ),
-                child: Padding(
+              Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "Question ${currentIndex + 1}",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 10),
-                      Row(
+                      const SizedBox(height: 10),
+                      const Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _questionController,
-                              maxLines: 5,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Nhập câu hỏi...',
-                              ),
-                            ),
+                          Text(
+                            "Câu hỏi",
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.image),
-                            onPressed: () => _pickImage(-1),
+                          SizedBox(width: 5),
+                          Text(
+                            "*", 
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold
+                            ),
                           ),
                         ],
                       ),
+                      const SizedBox(height: 5,),
+                      TextField(
+                        controller: _questionController,
+                        maxLines: 2,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          hintText: 'Nhập câu hỏi...',
+                          fillColor: Colors.white,
+                          enabledBorder:  OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(color: Color.fromARGB(255, 210, 210, 210)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(color: Colors.blue),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: (!tempImageQuestion.containsKey(currentQuestion.questionId))
+                            ? DottedBorder(
+                                color: Colors.grey,
+                                strokeWidth: 1,
+                                dashPattern: const [4, 4],
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.image),
+                                          onPressed: () => _pickImage(-1),
+                                        ),
+                                        const Text(
+                                          "Chọn ảnh từ máy bạn",
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Column(
+                              children: [
+                                Center(child: IconButton(onPressed: ()=>{
+                                  setState(() {
+                                    tempImageQuestion.remove(currentQuestion.questionId);
+                                  })
+                                }, icon: Icon(Icons.delete)),),
+                                Image.memory(tempImageQuestion[currentQuestion.questionId]!, height: 200, width: MediaQuery.of(context).size.width),
+                              ],
+                            ) 
+                      ), 
                     ],
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 "Đáp án",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              if (_correctAnswer == -1)
+                SizedBox(height: 10,),
+                Text('Đâu là câu trả lời chính xác ? ', style: TextStyle(color: Colors.red),),
+              const SizedBox(height: 10),
               ListView.builder(
                 itemCount: 4,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
+                    padding: const EdgeInsets.symmetric(vertical: 3.0),
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _answerControllers[index],
-                            decoration: InputDecoration(
-                              labelText: 'Đáp án ${String.fromCharCode(65 + index)}',
-                              border: OutlineInputBorder(),
+                        Row(
+                          children: [
+                            Radio<int> (value: index , groupValue: _correctAnswer, onChanged: (value)=>changeCorrectAnswer(value!),),
+                            SizedBox(width: 5,),
+
+                            Expanded(
+                              child: TextField(
+                                controller: _answerControllers[index],
+                                decoration: InputDecoration(
+                                  hintText: 'Đáp án ${String.fromCharCode(65 + index)}',
+                                  border: const OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            IconButton(
+                              icon: const Icon(Icons.image),
+                              onPressed: () => _pickImage(index),
+                            ),
+                          ],
+                        ),
+                        // Display the selected image next to the answer text field
+                        if (tempImageChoice.containsKey(currentQuestion.questionId) &&
+                            tempImageChoice[currentQuestion.questionId]!.length > index &&
+                            tempImageChoice[currentQuestion.questionId]![index].isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Image.memory(
+                              tempImageChoice[currentQuestion.questionId]![index],
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
                             ),
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        IconButton(
-                          icon: Icon(Icons.image),
-                          onPressed: () => _pickImage(index),
-                        ),
+                        if(showTextField[index])
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child: TextField(
+                              controller: _explainController,
+                              decoration: InputDecoration(
+                                hintText: 'Để lại lời giải thích ...',
+                                border: const OutlineInputBorder()
+                              ),
+                            ),
+                          )
+                        else
+                          SizedBox(height: 0,),
                       ],
                     ),
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton(
                     onPressed: _previousQuestion,
-                    child: Icon(Icons.skip_previous),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5)
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                    ),
+                    child: const Text("Quay lại", style: TextStyle(color: Colors.white),),
                   ),
                   currentIndex == widget.exam.numberOfQuestions - 1
                       ? ElevatedButton(
                           onPressed: _saveToDb,
-                          child: Icon(Icons.save_as),
+                          child: const Icon(Icons.save_as),
                         )
                       : ElevatedButton(
                           onPressed: _nextQuestion,
-                          child: Icon(Icons.skip_next),
-                        ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                          ),
+                          child: const Text("Tiếp", style: TextStyle(color: Colors.white),),
+                          ),
                 ],
               ),
             ],
           ),
         ),
+        )
       ),
     );
   }

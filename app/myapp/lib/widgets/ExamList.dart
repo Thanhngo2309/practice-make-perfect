@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-
-import '../model/Exam.dart';
+import 'package:myapp/model/dto/ExamResponse.dart';
 import 'ExamItem.dart';
 import 'QuestionListWidget.dart';
 
 class ExamList extends StatelessWidget {
-  final List<Exam> examList;
-  const ExamList({super.key, required this.examList});
+  final List<ExamResponse> examsByObject;
+  final String subjectName;
+  const ExamList({super.key, required this.examsByObject, required this.subjectName});
 
   @override
   Widget build(BuildContext context) {
+    print("ExamList : $examsByObject size " + examsByObject.length.toString());
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -17,7 +18,7 @@ class ExamList extends StatelessWidget {
           Expanded(
             child: ListView.separated(
               separatorBuilder: (context, index) => const SizedBox(height: 5),
-              itemCount: examList.length,
+              itemCount: examsByObject.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
@@ -25,8 +26,8 @@ class ExamList extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => QuestionListWidget(
-                          examList[index].examId,
-                          examList[index].duration,
+                          examsByObject[index].examId,
+                          examsByObject[index].duration,
                         ),
                       ),
                     );
@@ -34,7 +35,8 @@ class ExamList extends StatelessWidget {
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     child: ExamItem(
-                      exam: examList[index],
+                      subject: subjectName,
+                      exam: examsByObject[index],
                       withHeartIcon: true,
                     ),
                   ),

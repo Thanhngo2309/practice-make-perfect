@@ -1,19 +1,17 @@
 import 'package:myapp/data/AnswerData.dart';
 import 'package:myapp/model/Answer.dart';
-import 'package:myapp/model/Question.dart';
 import 'package:myapp/model/Result.dart';
 import 'package:myapp/model/SelectedAnswer.dart';
+import 'package:myapp/model/dto/QuestionResponse.dart';
 
 class CalculateScoreService {
-  Result calculateScore(
-      List<SelectedAnswer> selectedAnswers, List<Question> questions) {
+  Future<Result> calculateScore( 
+      List<SelectedAnswer> selectedAnswers, List<QuestionResponse> questions) async { 
     AnswerData answerData = AnswerData.getInstance();
 
-    List<Answer> answers = questions
-        .map(
-            (question) => answerData.getAnswerByQuestionId(question.questionId))
-        .whereType<Answer>() // Lọc bỏ các giá trị null
-        .toList();
+    List<Answer> answers = await Future.wait( 
+        questions.map((question) => answerData.getAnswerByQuestionId(question.questionId))
+    ).then((values) => values.whereType<Answer>().toList());
 
     return _calculateScore(selectedAnswers, answers);
   }
@@ -27,21 +25,21 @@ class CalculateScoreService {
     }
 
     int correctNumbers = 0;
-    int unanswerNumbes = 0;
+    int unanswerNumbers = 0;
     int incorrectNumbers = 0;
+
     for (var selectedAnswer in selectedAnswers) {
       String? correctAnswer = correctAnswerMap[selectedAnswer.questionId];
-      if (correctAnswer != null &&
-          selectedAnswer.isCorrectAnswer(correctAnswer)) {
+      if (correctAnswer != null && selectedAnswer.isCorrectAnswer(correctAnswer)) {
         correctNumbers++;
       } else if (selectedAnswer.selectedAnswer == '') {
-        unanswerNumbes++;
+        unanswerNumbers++;
       } else {
         incorrectNumbers++;
       }
     }
 
     return Result(
-        "$correctNumbers/30", correctNumbers, incorrectNumbers, unanswerNumbes);
+        "$correctNumbers/30", correctNumbers, incorrectNumbers, unanswerNumbers);
   }
 }

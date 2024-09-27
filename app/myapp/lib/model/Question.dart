@@ -16,7 +16,7 @@ class Question {
     required this.number,
     required this.imagePath,
   }) {
-    questionId = examId + number.toString();
+    questionId = examId + "-" + number.toString();
     if (choiceContent.length != 4) {
       throw Exception("Too many choices");
     }

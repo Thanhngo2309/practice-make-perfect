@@ -7,15 +7,19 @@ import 'package:myapp/widgets/ChatScreen.dart';
 import 'package:myapp/widgets/ExamScreenWidget.dart';
 import 'package:myapp/widgets/HomeWidget.dart';
 import 'package:myapp/widgets/LoginWidget.dart';
-import 'package:myapp/widgets/RegisterWidget.dart';
+import './widgets/ResetPasswordScreen.dart';
+import './widgets/RegisterWidget.dart';
+import './routes/UserProtectRoute.dart';
+
 import 'firebase_options.dart';
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo binding đã được khởi tạo
-  await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
-  await SharedPrefs.init(); // Khởi tạo SharedPrefs hoặc các dịch vụ khác
-  runApp(const MyApp()); // Khởi chạy ứng dụng Flutter
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  await SharedPrefs.init();
+  
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -40,11 +44,14 @@ class MyApp extends StatelessWidget {
         }
         return null;
       },
-      initialRoute: '/signup',
+      initialRoute: '/add-exam',
       routes: {'/chat': (context) => ChatSreen(),
-      '/': (context) =>HomeScreen(),
-      '/signin': (context)=> LoginPage(),
-      '/signup': (context)=>SignupPage()},
+      '/signin': (context)=> const LoginPage(),
+      '/': (context) => UserProtectRoute(child: HomeScreen()),
+      '/signup': (context)=> const SignInPage2(),
+      '/reset-password': (context) => const ResetPasswordPage(),
+      '/add-exam': (context) => AddExam()
+      },
       debugShowCheckedModeBanner: false,
     );
   }

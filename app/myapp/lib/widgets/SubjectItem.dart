@@ -10,14 +10,18 @@ class SubjectItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Container(
+      decoration: const BoxDecoration(color: Colors.white),
+      child: GestureDetector(
       onTap: () {
         print("You clicked on ${subject.name}");
 
         Navigator.pushNamed(context, ExamScreenWidget.routeName,
             arguments: subject);
       },
-      child: Column(
+      child: Container(decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+      ),child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
@@ -32,7 +36,8 @@ class SubjectItem extends StatelessWidget {
             style: const TextStyle(fontSize: 12),
           ),
         ],
-      ),
+      ),),
+    ),
     );
   }
 }

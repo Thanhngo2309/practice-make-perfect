@@ -135,7 +135,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                       filled: true,
                       fillColor: Colors.grey[200],
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
+                        horizontal: 15,
                         vertical: 10,
                       ),
                     ),

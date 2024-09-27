@@ -13,11 +13,13 @@ class Exam {
   late int numberOfQuestions;
   // List<Question> questions;
 
+
+
   Exam(this.name, this.subject, this.provider) {
     this.examId = "Đề thi " + name + SubjectConverter.subjectToString(subject) + provider; 
     if (subject == Subject.math) {
       duration = 60 * 90;
-      numberOfQuestions = 1;
+      numberOfQuestions = 2;
     } else if (subject == Subject.physics) {
       duration = 60 * 50;
       numberOfQuestions = 45;
@@ -46,4 +48,5 @@ class Exam {
       numberOfQuestions = 3;
     }
   }
+
 }

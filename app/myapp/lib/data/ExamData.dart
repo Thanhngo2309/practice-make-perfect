@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myapp/data/FirebaseFirestoreInst.dart';
 import 'package:myapp/model/Exam.dart';
 import 'package:myapp/model/Subject.dart';
+import 'package:myapp/model/dto/ExamResponse.dart';
+import 'package:myapp/util/SubjectUtils.dart';
 
 class ExamData {
   static List<Exam> exams = [
@@ -46,28 +48,90 @@ class ExamData {
     return _instance;
   }
 
+  Future<void> saveAllExams() async {
+    for (Exam exam in exams) {
+      await save(exam); // Gọi phương thức save cho từng exam
+    }
+  }
+
+  // Phương thức save cho từng exam
+  Future<void> save(Exam exam) async {
+    
+    FirebaseFirestore db = FirestoreInst.getInstance();
+    try {
+      await db.collection("exams").add({
+        "name": exam.name,
+        "subject": exam.subject.toString(),
+        "examId": exam.examId,
+        "duration":exam.duration,
+        "provider":exam.provider,
+        "numberOfQuestions": exam.numberOfQuestions
+      }).then((value) {
+        print("Exam added with ID: ${value.id}");
+        print("Saved $exam");
+      });
+    } catch (error) {
+      print("Failed to add exam: $error");
+    }
+  }
+
+
   Exam getExamByExamId(String examId) {
     return exams.firstWhere((exam) => exam.examId == examId);
   }
 
-  List<Exam> getExamsBySubject(Subject subject) {
-    return exams.where((exam) => exam.subject == subject).toList();
-  }
+  Future<List<ExamResponse>> getAllExams() async {
+    List<ExamResponse> exams = []; // Khởi tạo danh sách exam
+    try {
+      FirebaseFirestore db = FirebaseFirestore.instance;
+      QuerySnapshot querySnapshot = await db.collection("exams").get();
 
-  List<Exam> getAllExams() {
+      exams = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return ExamResponse(
+          data['examId'],
+          data['name'],
+          SubjectUtils.stringToSubject(data['subject']),
+          data['duration'],
+          data['provider'],
+          data['numberOfQuestions'],
+        );
+      }).toList();
+    } catch (e) {
+      print("Error fetching exams: $e");
+    }
     return exams;
   }
 
-  void save(Exam exam) {
-    FirebaseFirestore db = FirestoreInst.getInstance();
-    db.collection("exams").add({
-      "name": exam.name,
-      "subject": exam.subject.toString(),
-      "examId": exam.examId,
-    }).then((value) {
-      print("Exam added with ID: ${value.id}");
-    }).catchError((error) {
-      print("Failed to add exam: $error");
-    });
+  Future<List<ExamResponse>> getExamsBySubject(Subject subject) async {
+    print("subject ${subject.name}");
+    List<ExamResponse> exams = []; // Đổi List<Exam> thành List<ExamResponse>
+    try {
+      FirebaseFirestore db = FirebaseFirestore.instance;
+      QuerySnapshot querySnapshot = await db
+          .collection("exams")
+          .where("subject", isEqualTo: SubjectUtils.subjectToString(subject))
+          .get();
+
+      exams = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        // Khởi tạo đối tượng ExamResponse
+        ExamResponse response = ExamResponse(
+          data['examId'],
+          data['name'],
+          SubjectUtils.stringToSubject(data['subject']),
+          data['duration'],
+          data['provider'],
+          data['numberOfQuestions'],
+        );
+
+        return response;
+      }).toList();
+    } catch (e) {
+      print("Error fetching exams: $e");
+    }
+    return exams;
   }
+
+
 }

@@ -1,3 +1,5 @@
+import 'package:myapp/model/dto/QuestionResponse.dart';
+
 import '../model/Question.dart';
 import '../model/SelectedAnswer.dart';
 
@@ -11,7 +13,7 @@ class AutoGenerateSelectedAnswerService {
     return _instance;
   }
 
-  Map<int, SelectedAnswer> generate(List<Question> questions, String examId) {
+  Map<int, SelectedAnswer> generate(List<QuestionResponse> questions, String examId) {
     return {
       for (var index in List.generate(questions.length, (index) => index))
         index: SelectedAnswer(

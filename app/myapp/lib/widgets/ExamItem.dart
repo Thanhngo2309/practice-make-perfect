@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/application-service/FavoriteFeature.dart';
+import 'package:myapp/model/dto/ExamResponse.dart';
 
 import '../application-service/SharedPrefs.dart';
 import '../model/Exam.dart';
 
 class ExamItem extends StatefulWidget {
-  final Exam exam;
+  final String? subject;
+  final ExamResponse exam;
   final bool withHeartIcon;
 
   const ExamItem({
     super.key,
     required this.exam,
     required this.withHeartIcon,
+    this.subject
   });
 
   @override
@@ -23,34 +27,21 @@ class ExamItemState extends State<ExamItem> {
   @override
   void initState() {
     super.initState();
-    String? idsString = SharedPrefs.getString('intList');
-    if (idsString != null) {
-      List<String> ids = idsString.split(',');
-      if (ids.contains(widget.exam.examId)) {
-        setState(() {
-          isFavorite = true;
-        });
-      }
-    }
+    checkIfFavorite();
+  }
+
+  void checkIfFavorite() async {
+    bool exists = await Favoritefeature.checkExamExist(widget.subject!, widget.exam.examId);
+    setState(() {
+      isFavorite = exists; // Cập nhật isFavorite sau khi có kết quả
+    });
   }
 
   Future<void> toogleFavorite() async {
-    String? idsString = SharedPrefs.getString('intList');
-    List<String> ids = idsString != null ? idsString.split(',') : [];
-
-    if (isFavorite) {
-      ids.remove(widget.exam.examId);
-      setState(() {
-        isFavorite = false;
-      });
-    } else {
-      ids.add(widget.exam.examId);
-      setState(() {
-        isFavorite = true;
-      });
-    }
-
-    await SharedPrefs.saveString('intList', ids.join(','));
+    await Favoritefeature.addOrRemoveExam(widget.subject!, widget.exam.examId);
+    setState(() {
+      isFavorite = !isFavorite;
+    });
   }
 
   @override
@@ -61,17 +52,17 @@ class ExamItemState extends State<ExamItem> {
         Text(widget.exam.name),
         Row(
           children: [
-            const Icon(Icons.access_time, size: 16),
+            const Icon(Icons.access_time, size: 16, color: Colors.purple,),
             const SizedBox(width: 4),
-            Text('${widget.exam.duration ~/ 60} phút'),
+            Text('${widget.exam.duration ~/ 60} phút', style: const TextStyle(color: Colors.purple),),
             const SizedBox(width: 10),
-            const Icon(Icons.question_answer, size: 16),
+            const Icon(Icons.question_answer, size: 16, color: Colors.purple,),
             const SizedBox(width: 4),
-            Text('${widget.exam} câu'),
+            Text('${widget.exam.numberOfQuestions} câu', style: const TextStyle(color: Colors.purple),),
             const SizedBox(width: 10),
-            const Icon(Icons.star, size: 16),
+            const Icon(Icons.star, size: 16, color: Colors.purple,),
             const SizedBox(width: 4),
-            Text(widget.exam.subject.name),
+            Text(widget.exam.subject.name,  style: const TextStyle(color: Colors.purple),),
             const SizedBox(width: 10),
             widget.withHeartIcon
                 ? GestureDetector(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/service/AuthService.dart';
 
-class SignInPage2 extends StatelessWidget {
-  const SignInPage2({Key? key}) : super(key: key);
+class ResetPasswordPage extends StatelessWidget {
+  const ResetPasswordPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +70,7 @@ class _FormContent extends StatefulWidget {
 }
 
 class __FormContentState extends State<_FormContent> {
-  bool _isPasswordVisible = false;
-  bool _rememberMe = false;
   String email = '';
-  String password = '';
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -121,60 +118,6 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
-            TextFormField(
-              onChanged: (text) {
-                 password = text;
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Mật khẩu không được để trống';
-                }
-
-                if (value.length < 6) {
-                  return 'Mật khẩu phải dài hơn 6 ký tự';
-                }
-                return null;
-              },
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: '*********',
-                  prefixIcon: const Icon(Icons.lock_outline_rounded),
-                  border: const OutlineInputBorder(),
-                  enabledBorder:  OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Color.fromARGB(255, 210, 210, 210)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.blue),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  )),
-            ),
-            _gap(),
-            CheckboxListTile(
-              value: _rememberMe,
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _rememberMe = value;
-                });
-              },
-              title: const Text('Lưu mật khẩu'),
-              controlAffinity: ListTileControlAffinity.leading,
-              dense: true,
-              contentPadding: const EdgeInsets.all(0),
-            ),
-            _gap(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -186,30 +129,33 @@ class __FormContentState extends State<_FormContent> {
                 child: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Đăng ký',
+                    "Gửi lại mật khẩu",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
-                    AuthService.signup(email, password, context);
+                    AuthService.resetPassword(email, context);
                   }
                 },
               ),
             ),
             const SizedBox(height: 10,),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Bạn đã có tài khoản ? "),
-                  GestureDetector(
-                      onTap: () {
-                          Navigator.pushNamed(context, "/signin");
-                        },
-                    child: const Text("Đăng nhập", style: TextStyle(color: Colors.blue),),
-                                )
-                              ],
-                            )
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text("Bạn nhớ mật khẩu? "),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(context, "/signin");
+                                },
+                                child: const Text(
+                                  "Đăng nhập",
+                                  style: TextStyle(color: Colors.blue),
+                                ),
+                              )
+                            ],
+                          )
           ],
         ),
       ),

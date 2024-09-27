@@ -12,13 +12,13 @@ class DocumentItem extends StatelessWidget {
       Text(document.title),
       Row(
         children: [
-          const Icon(Icons.person, size: 16),
+          const Icon(Icons.person, size: 16, color: Colors.purple,),
           const SizedBox(width: 4),
-          Text(document.author),
+          Text(document.author, style: const TextStyle(color: Colors.purple),),
           const SizedBox(width: 10),
-          const Icon(Icons.pages, size: 16),
+          const Icon(Icons.pages, size: 16, color: Colors.purple,),
           const SizedBox(width: 4),
-          Text('${document.pages} trang'),
+          Text('${document.pages} trang', style: const TextStyle(color: Colors.purple),),
         ],
       ),
     ]);
