@@ -1,0 +1,8 @@
+<resources>
+    <string name="facebook_app_id">1453466665342677</string>
+    <string name="facebook_client_token">2f3eb614487fdcb2b408cb8ea7ebc9ca</string>
+    <string name="firebase_api_key">AIzaSyDw8gaqO1K43X3AwouK7ZyOnzjEFDmImgo</string>
+    <string name="firebase_app_id">1:216392954827:android:d434d5dc9c92e035cefc4e</string>
+    <string name="firebase_project_id">baitaplon-34432</string>
+    <string name="firebase_storage_bucket">baitaplon-34432.appspot.com</string>
+</resources>
