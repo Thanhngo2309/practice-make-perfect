@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:myapp/GeminiApiKey.dart';
 import '../model/Message.dart';
 
 class ChatWidget extends StatefulWidget {
@@ -15,8 +17,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   final TextEditingController _controller = TextEditingController();
   bool _isResponding = false;
   final List<Message> _messages = [];
-  static const String _openaiApiKey =
-      "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";
+  static String? _geminiApiKey = GeminiApiKey.geminiApiKey;
 
   Future<void> _sendMessage() async {
     if (_controller.text.isEmpty) return;
@@ -31,31 +32,34 @@ class _ChatWidgetState extends State<ChatWidget> {
     _controller.clear();
 
     try {
+      // Tạo body cho request
+      final body = jsonEncode({
+        "contents": [
+          {
+            "parts": [
+              {"text": userMessage}
+            ]
+          }
+        ]
+      });
+
+      // Gửi request POST
       final response = await http.post(
-        Uri.parse("https://api.openai.com/v1/chat/completions"),
+        Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${_geminiApiKey}"),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer $_openaiApiKey"
         },
-        body: jsonEncode({
-          "model": "gpt-4o-mini",
-          "messages": [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": userMessage}
-          ]
-        }),
+        body: body, // Sử dụng body đã tạo
       );
 
-      if (response.statusCode == 200) {
+      print(response.body);
+
         final jsonResponse = jsonDecode(response.body);
-        final aiMessage = jsonResponse['choices'][0]['message']['content'];
+        final aiMessage = jsonResponse['candidates'][0]['content']['parts'][0]['text'];
         setState(() {
           _messages.add(Message(false, aiMessage));
           _isResponding = false;
         });
-      } else {
-        throw Exception('Failed to load response');
-      }
     } catch (e) {
       print('Error in _sendMessage: $e'); // In lỗi ra console
       setState(() {

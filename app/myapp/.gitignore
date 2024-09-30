@@ -54,6 +54,7 @@ android/app/src/main/res/
 
 # Bỏ qua file firebase_options.dart trong thư mục lib
 lib/firebase_options.dart
+lib/GeminiApiKey.dart
 
 
 # Bỏ qua file firebase.json

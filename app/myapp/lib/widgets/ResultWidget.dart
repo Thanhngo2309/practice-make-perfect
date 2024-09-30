@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/model/Result.dart';
 import 'package:myapp/model/dto/QuestionResponse.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 import '../application-service/CalculateScoreService.dart';
 import '../data/AnswerData.dart';
 import '../model/Answer.dart';
@@ -8,9 +14,12 @@ import '../model/Attempt.dart';
 import '../model/SelectedAnswer.dart';
 import 'QuestionListWidget.dart';
 import 'SelectedAnswerDetailWidget.dart';
+import 'dart:html' as html; // Thêm import cho nền tảng web
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ResultWidget extends StatelessWidget {
   Attempt attempt;
+  ScreenshotController screenshotController = ScreenshotController();
 
   ResultWidget(this.attempt, {super.key});
 
@@ -167,6 +176,11 @@ class ResultWidget extends StatelessWidget {
                         );
                     }).toList(),
                   ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: takeScreenshotAndShare,
+                  child: Icon(Icons.share),
                 )
               ]),
             );
@@ -189,4 +203,46 @@ class ResultWidget extends StatelessWidget {
           builder: (context) => QuestionListWidget(examId, 90 * 60)),
     );
   }
+Future<void> takeScreenshotAndShare() async {
+  try {
+    // Chụp ảnh màn hình
+    final image = await screenshotController.capture();
+    if (image == null) return;
+
+    if (kIsWeb) {
+      // Chia sẻ trên nền tảng web
+      final blob = html.Blob([image], 'image/png');
+      final url = html.Url.createObjectUrlFromBlob(blob);
+
+      // Tạo một thẻ download để người dùng tải ảnh về
+      final anchor = html.AnchorElement(href: url)
+        ..setAttribute('download', 'screenshot.png')
+        ..click();
+      html.Url.revokeObjectUrl(url);
+
+      // Sử dụng Web Share API để chia sẻ ảnh đã tải xuống
+      if (await html.window.navigator.share != null) {
+        // Chia sẻ link hình ảnh đã tải
+        await html.window.navigator.share({
+          'title': 'My Screenshot',
+          'text': 'Check out my screenshot!',
+          'url': url, // Chia sẻ URL của ảnh vừa tải
+        });
+      }
+    } else {
+      // Lưu ảnh chụp vào file tạm thời cho di động
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath = '${directory.path}/screenshot.png';
+      final imageFile = File(imagePath);
+      await imageFile.writeAsBytes(image);
+
+      // Chia sẻ ảnh chụp màn hình
+      await Share.shareXFiles([XFile(imageFile.path)],
+          text: 'Check out my screenshot!');
+    }
+  } catch (e) {
+    print("Lỗi khi chụp màn hình: $e");
+  }
+}
+
 }
