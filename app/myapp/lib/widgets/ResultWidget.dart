@@ -18,6 +18,7 @@ import 'dart:html' as html; // Thêm import cho nền tảng web
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ResultWidget extends StatelessWidget {
+  
   Attempt attempt;
   ScreenshotController screenshotController = ScreenshotController();
 
@@ -45,7 +46,7 @@ class ResultWidget extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<Result>(
-        future: CalculateScoreService().calculateScore(attempt.selectedAnswers, attempt.questions),
+        future: CalculateScoreService().calculateScore(attempt),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator()); // Show loading indicator

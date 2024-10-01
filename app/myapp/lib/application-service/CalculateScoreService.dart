@@ -1,19 +1,27 @@
 import 'package:myapp/data/AnswerData.dart';
+import 'package:myapp/data/AttemptData.dart';
 import 'package:myapp/model/Answer.dart';
+import 'package:myapp/model/Attempt.dart';
 import 'package:myapp/model/Result.dart';
 import 'package:myapp/model/SelectedAnswer.dart';
 import 'package:myapp/model/dto/QuestionResponse.dart';
 
 class CalculateScoreService {
   Future<Result> calculateScore( 
-      List<SelectedAnswer> selectedAnswers, List<QuestionResponse> questions) async { 
+    Attempt attempt
+      /*List<SelectedAnswer> selectedAnswers, List<QuestionResponse> questions*/) async { 
+    
+    if(attempt.result != null) return attempt.result;
     AnswerData answerData = AnswerData.getInstance();
 
     List<Answer> answers = await Future.wait( 
-        questions.map((question) => answerData.getAnswerByQuestionId(question.questionId))
+        attempt.questions.map((question) => answerData.getAnswerByQuestionId(question.questionId))
     ).then((values) => values.whereType<Answer>().toList());
 
-    return _calculateScore(selectedAnswers, answers);
+    Result result = _calculateScore(attempt.selectedAnswers, answers);
+    attempt.result = result;
+    AttemptData.getInstance().save(attempt);
+    return result;
   }
 
   Result _calculateScore(

@@ -9,6 +9,7 @@ import 'package:myapp/widgets/ChatScreen.dart';
 import 'package:myapp/widgets/ExamScreenWidget.dart';
 import 'package:myapp/widgets/HomeWidget.dart';
 import 'package:myapp/widgets/LoginWidget.dart';
+import 'package:myapp/widgets/ProfileWidget.dart';
 import './widgets/ResetPasswordScreen.dart';
 import './widgets/RegisterWidget.dart';
 import './routes/UserProtectRoute.dart';
@@ -54,7 +55,8 @@ class MyApp extends StatelessWidget {
       '/': (context) => UserProtectRoute(child: HomeScreen()),
       '/signup': (context)=> const SignInPage2(),
       '/reset-password': (context) => const ResetPasswordPage(),
-      '/add-exam': (context) => AddExam()
+      '/add-exam': (context) => AddExam(),
+      '/profile': (context) => ProfileWidget()
       },
       debugShowCheckedModeBanner: false,
     );
