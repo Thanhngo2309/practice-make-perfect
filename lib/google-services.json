@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1026985524201",
+    "project_id": "btl-ltctbdd-n13",
+    "storage_bucket": "btl-ltctbdd-n13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026985524201:android:db8a2c8f211682711a6978",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdSdHLIxk7CAYZV-Cq-sMrxF5V9aXIEY0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
