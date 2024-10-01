@@ -35,102 +35,134 @@ class ResultWidget extends StatelessWidget {
             ElevatedButton(
                 onPressed: () => retakeExam(context, attempt.examId),
                 style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal, // Thay 'primary' bằng 'backgroundColor'
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                  backgroundColor:
+                      Colors.teal, // Thay 'primary' bằng 'backgroundColor'
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-                child: const Text("Thử lại",  style: TextStyle(color: Colors.white)))
+                child: const Text("Thử lại",
+                    style: TextStyle(color: Colors.white)))
           ],
         ),
       ),
       body: FutureBuilder<Result>(
-        future: CalculateScoreService().calculateScore(attempt.selectedAnswers, attempt.questions),
+        future: CalculateScoreService()
+            .calculateScore(attempt.selectedAnswers, attempt.questions),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator()); // Show loading indicator
+            return Center(
+                child: CircularProgressIndicator()); // Show loading indicator
           } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}")); // Handle error
+            return Center(
+                child: Text("Error: ${snapshot.error}")); // Handle error
           } else {
             attempt.result = snapshot.data!; // Assign the result
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Column(children: [
                 Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(3), 
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 238, 61, 120),
-                          borderRadius: BorderRadius.circular(4), 
-                        ),
-                        child: Text(
-                          attempt.result.score,
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 238, 61, 120),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      const SizedBox(width: 5,),
-                      const Text(
-                        "Điểm: ",
+                      child: Text(
+                        attempt.result.score,
+                        style: const TextStyle(color: Colors.white),
                       ),
-                      const SizedBox(width: 10),
-                      const Icon(Icons.timer, color: Colors.purple, size: 25,),
-                      Text(attempt.totalTime) // Ensure totalTime is a String
-                    ],
-                  ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text(
+                      "Điểm: ",
+                    ),
+                    const SizedBox(width: 10),
+                    const Icon(
+                      Icons.timer,
+                      color: Colors.purple,
+                      size: 25,
+                    ),
+                    Text(attempt.totalTime) // Ensure totalTime is a String
+                  ],
+                ),
                 const SizedBox(height: 10),
                 Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(children: [Container(
-                        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10), 
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(4), 
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 3, horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            attempt.result.correctNumbers.toString(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
-                        child: Text(
-                          attempt.result.correctNumbers.toString(),
-                          style: const TextStyle(color: Colors.white),
+                        const SizedBox(
+                          width: 5,
                         ),
-                      ),
-                      const SizedBox(width: 5,),
-                      const Text(
-                        "Đúng",
-                      ),],),
-                      const SizedBox(width: 20),
-                      Row(children: [Container(
-                        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10), 
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(4), 
+                        const Text(
+                          "Đúng",
                         ),
-                        child: Text(
-                          attempt.result.incorrectNumbers.toString(),
-                          style: const TextStyle(color: Colors.white),
+                      ],
+                    ),
+                    const SizedBox(width: 20),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 3, horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            attempt.result.incorrectNumbers.toString(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 5,),
-                      const Text(
-                        "Sai",
-                      ),],),
-                      const SizedBox(width: 20),
-                      Row(children: [Container(
-                        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10), 
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 232, 231, 231),
-                          borderRadius: BorderRadius.circular(4), 
+                        const SizedBox(
+                          width: 5,
                         ),
-                        child: Text(
-                          attempt.result.unanswerNumbes.toString(), // Corrected typo
+                        const Text(
+                          "Sai",
                         ),
-                      ),
-                      const SizedBox(width: 5,),
-                      const Text(
-                        "Chưa làm",
-                      ),],),
-                      
-                    ],
-                  ),
+                      ],
+                    ),
+                    const SizedBox(width: 20),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 3, horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 232, 231, 231),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            attempt.result.unanswerNumbes
+                                .toString(), // Corrected typo
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        const Text(
+                          "Chưa làm",
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 const Center(
                   child: Text(
@@ -144,7 +176,8 @@ class ResultWidget extends StatelessWidget {
                     mainAxisSpacing: 5,
                     crossAxisSpacing: 5,
                     crossAxisCount: 4,
-                    children: attempt.selectedAnswers.asMap().entries.map((entry) {
+                    children:
+                        attempt.selectedAnswers.asMap().entries.map((entry) {
                       int index = entry.key;
                       SelectedAnswer ans = entry.value;
                       double screenWidth = MediaQuery.of(context).size.width;
@@ -152,28 +185,34 @@ class ResultWidget extends StatelessWidget {
                       double buttonHeight = screenHeight * 0.1;
                       double buttonWidth = buttonHeight * 3;
                       return ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: Size(buttonWidth, buttonHeight),
-                            padding: const EdgeInsets.all(0),
-                            shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5), // Đặt border thành vuông
-                                  ),
-                            backgroundColor: (ans.isCorrect) ? Colors.blue : Colors.red,
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: Size(buttonWidth, buttonHeight),
+                          padding: const EdgeInsets.all(0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                5), // Đặt border thành vuông
                           ),
-                          onPressed: () async { // Make this async
-                            Answer? answer = await AnswerData.getInstance().getAnswerByQuestionId(attempt.questions[index].questionId);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SelectedAnswerDetailWidget(ans, attempt.questions[index], answer!),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            "Câu ${index + 1}",
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        );
+                          backgroundColor:
+                              (ans.isCorrect) ? Colors.blue : Colors.red,
+                        ),
+                        onPressed: () async {
+                          // Make this async
+                          Answer? answer = await AnswerData.getInstance()
+                              .getAnswerByQuestionId(
+                                  attempt.questions[index].questionId);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SelectedAnswerDetailWidget(
+                                  ans, attempt.questions[index], answer!),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Câu ${index + 1}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
                     }).toList(),
                   ),
                 ),
@@ -190,9 +229,10 @@ class ResultWidget extends StatelessWidget {
     );
   }
 
-  Future<Widget> answerDetail(
-      BuildContext context, QuestionResponse question, SelectedAnswer ans) async {
-    Answer? answer = await AnswerData.getInstance().getAnswerByQuestionId(question.questionId);
+  Future<Widget> answerDetail(BuildContext context, QuestionResponse question,
+      SelectedAnswer ans) async {
+    Answer? answer = await AnswerData.getInstance()
+        .getAnswerByQuestionId(question.questionId);
     return SelectedAnswerDetailWidget(ans, question, answer!);
   }
 
@@ -203,46 +243,48 @@ class ResultWidget extends StatelessWidget {
           builder: (context) => QuestionListWidget(examId, 90 * 60)),
     );
   }
-Future<void> takeScreenshotAndShare() async {
-  try {
-    // Chụp ảnh màn hình
-    final image = await screenshotController.capture();
-    if (image == null) return;
 
-    if (kIsWeb) {
-      // Chia sẻ trên nền tảng web
-      final blob = html.Blob([image], 'image/png');
-      final url = html.Url.createObjectUrlFromBlob(blob);
+  Future<void> takeScreenshotAndShare() async {
+    try {
+      // Chụp ảnh màn hình
+      final image = await screenshotController.capture();
+      if (image == null) return;
 
-      // Tạo một thẻ download để người dùng tải ảnh về
-      final anchor = html.AnchorElement(href: url)
-        ..setAttribute('download', 'screenshot.png')
-        ..click();
-      html.Url.revokeObjectUrl(url);
+      if (kIsWeb) {
+        // Chia sẻ trên nền tảng web
+        final blob = html.Blob([image], 'image/png');
+        final url = html.Url.createObjectUrlFromBlob(blob);
 
-      // Sử dụng Web Share API để chia sẻ ảnh đã tải xuống
-      if (await html.window.navigator.share != null) {
-        // Chia sẻ link hình ảnh đã tải
-        await html.window.navigator.share({
-          'title': 'My Screenshot',
-          'text': 'Check out my screenshot!',
-          'url': url, // Chia sẻ URL của ảnh vừa tải
-        });
+        // Tạo một thẻ download để người dùng tải ảnh về
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute('download', 'screenshot.png')
+          ..click();
+        html.Url.revokeObjectUrl(url);
+
+        // Kiểm tra xem Web Share API có được hỗ trợ hay không
+        if (html.window.navigator.share != null) {
+          // Chia sẻ qua Web Share API (nếu khả dụng)
+          await html.window.navigator.share({
+            'title': 'My Screenshot',
+            'text': 'Check out my screenshot!',
+            'url': url,
+          });
+        } else {
+          print("Web Share API không được hỗ trợ trên trình duyệt này.");
+        }
+      } else {
+        // Lưu ảnh chụp vào file tạm thời trên di động
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath = '${directory.path}/screenshot.png';
+        final imageFile = File(imagePath);
+        await imageFile.writeAsBytes(image);
+
+        // Chia sẻ ảnh chụp màn hình
+        await Share.shareXFiles([XFile(imageFile.path)],
+            text: 'Check out my screenshot!');
       }
-    } else {
-      // Lưu ảnh chụp vào file tạm thời cho di động
-      final directory = await getApplicationDocumentsDirectory();
-      final imagePath = '${directory.path}/screenshot.png';
-      final imageFile = File(imagePath);
-      await imageFile.writeAsBytes(image);
-
-      // Chia sẻ ảnh chụp màn hình
-      await Share.shareXFiles([XFile(imageFile.path)],
-          text: 'Check out my screenshot!');
+    } catch (e) {
+      print("Lỗi khi chụp màn hình và chia sẻ: $e");
     }
-  } catch (e) {
-    print("Lỗi khi chụp màn hình: $e");
   }
-}
-
 }

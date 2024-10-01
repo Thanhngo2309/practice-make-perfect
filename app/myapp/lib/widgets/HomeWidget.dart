@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/service/AuthService.dart';
+import 'package:myapp/widgets/ChatWidget.dart';
 
 import '../model/Subject.dart';
 import 'SubjectItem.dart';
@@ -31,7 +32,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Padding(
@@ -47,43 +47,49 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               OutlinedButton(
-                onPressed: () {
-                  user != null ? AuthService.signOut(context) : Navigator.pushNamed(context, "/signin");
-                }, 
-                child: Text(user != null ? "Đăng xuất" : "Đăng nhập")
-              ),
+                  onPressed: () {
+                    user != null
+                        ? AuthService.signOut(context)
+                        : Navigator.pushNamed(context, "/signin");
+                  },
+                  child: Text(user != null ? "Đăng xuất" : "Đăng nhập")),
             ],
           ),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(color: Color.fromARGB(255, 245, 244, 244)),
+        decoration:
+            const BoxDecoration(color: Color.fromARGB(255, 245, 244, 244)),
         child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 5,
-            mainAxisSpacing: 5,
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 5,
+              mainAxisSpacing: 5,
+            ),
+            itemCount: subjectImages.length,
+            itemBuilder: (context, index) {
+              final subject = subjectImages.keys.elementAt(index);
+              final iconPath = subjectImages.values.elementAt(index);
+              return SubjectItem(subject: subject, iconPath: iconPath);
+            },
           ),
-          itemCount: subjectImages.length,
-          itemBuilder: (context, index) {
-            final subject = subjectImages.keys.elementAt(index);
-            final iconPath = subjectImages.values.elementAt(index);
-            return SubjectItem(subject: subject, iconPath: iconPath);
-          },
         ),
       ),
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushNamed(context, "/chat");
-          },
-          shape: const CircleBorder(),
-          child: const Icon(Icons.chat),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const Dialog(
+                child: ChatWidget(),
+              );
+            },
+          );
+        },
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.chat),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
