@@ -123,7 +123,7 @@ class _QuestionListWidgetState extends State<QuestionListWidget> {
     });
     attempt.setTotalTime(
         TimeConvert.secondsToHHMMSS(widget.duration - remainingSeconds));
-    AttemptData.getInstance().save(attempt);
+    // AttemptData.getInstance().save(attempt);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

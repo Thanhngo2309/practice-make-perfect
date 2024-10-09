@@ -46,6 +46,21 @@ class HomeScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              // profile button
+              Row(
+                children: [
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      shape: const CircleBorder(),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/profile");
+                    }, 
+                    child: const Icon(Icons.person)
+                  ),
+                  Text("Hồ sơ", style: TextStyle(fontSize: 15),)
+                ],
+              ),
               OutlinedButton(
                   onPressed: () {
                     user != null

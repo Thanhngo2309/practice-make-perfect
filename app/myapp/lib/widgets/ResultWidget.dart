@@ -47,8 +47,7 @@ class ResultWidget extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<Result>(
-        future: CalculateScoreService()
-            .calculateScore(attempt.selectedAnswers, attempt.questions),
+        future: CalculateScoreService().calculateScore(attempt),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -261,19 +260,17 @@ class ResultWidget extends StatelessWidget {
           ..click();
         html.Url.revokeObjectUrl(url);
 
-        // Kiểm tra xem Web Share API có được hỗ trợ hay không
-        if (html.window.navigator.share != null) {
-          // Chia sẻ qua Web Share API (nếu khả dụng)
+        // Sử dụng Web Share API để chia sẻ ảnh đã tải xuống
+        if (await html.window.navigator.share != null) {
+          // Chia sẻ link hình ảnh đã tải
           await html.window.navigator.share({
             'title': 'My Screenshot',
             'text': 'Check out my screenshot!',
-            'url': url,
+            'url': url, // Chia sẻ URL của ảnh vừa tải
           });
-        } else {
-          print("Web Share API không được hỗ trợ trên trình duyệt này.");
         }
       } else {
-        // Lưu ảnh chụp vào file tạm thời trên di động
+        // Lưu ảnh chụp vào file tạm thời cho di động
         final directory = await getApplicationDocumentsDirectory();
         final imagePath = '${directory.path}/screenshot.png';
         final imageFile = File(imagePath);
@@ -284,7 +281,7 @@ class ResultWidget extends StatelessWidget {
             text: 'Check out my screenshot!');
       }
     } catch (e) {
-      print("Lỗi khi chụp màn hình và chia sẻ: $e");
+      print("Lỗi khi chụp màn hình: $e");
     }
   }
 }

@@ -9,4 +9,9 @@ class QuestionResponse{
   String imagePath;
 
   QuestionResponse(this.examId,this.questionId,this.questionText,this.choices,this.number,this.imagePath);
+
+  @override
+  String toString() {
+    return 'QuestionResponse{examId: $examId, questionId: $questionId, questionText: $questionText, choices: $choices, number: $number, imagePath: $imagePath}';
+  }
 }

@@ -133,7 +133,7 @@ class __FormContentState extends State<_FormContent> {
                 if (value.length < 6) {
                   return 'Mật khẩu phải dài hơn 6 ký tự';
                 }
-                return null;
+                return null;-
               },
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(

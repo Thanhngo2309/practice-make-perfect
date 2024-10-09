@@ -15,4 +15,9 @@ class SelectedAnswer {
     isCorrect = selectedAnswer == correctAnswer;
     return isCorrect;
   }
+
+  @override
+  String toString() {
+    return 'SelectedAnswer{examId: $examId, questionId: $questionId, selectedAnswer: $selectedAnswer, isCorrect: $isCorrect}';
+  }
 }

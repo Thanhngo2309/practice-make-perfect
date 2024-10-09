@@ -8,6 +8,7 @@ import 'package:myapp/widgets/ChatWidget.dart';
 import 'package:myapp/widgets/ExamScreenWidget.dart';
 import 'package:myapp/widgets/HomeWidget.dart';
 import 'package:myapp/widgets/LoginWidget.dart';
+import 'package:myapp/widgets/ProfileWidget.dart';
 import 'package:myapp/widgets/ResultWidget.dart';
 import './widgets/ResetPasswordScreen.dart';
 import './widgets/RegisterWidget.dart';
@@ -46,14 +47,15 @@ class MyApp extends StatelessWidget {
         }
         return null;
       },
-      initialRoute: '/add-exam', // This sets AddExam as the initial screen
+      initialRoute: '/add-exam',
       routes: {
-        '/chat': (context) => ChatWidget(),
+        '/chat': (context) => ChatSreen(),
         '/signin': (context) => const LoginPage(),
         '/': (context) => UserProtectRoute(child: HomeScreen()),
         '/signup': (context) => const SignInPage2(),
         '/reset-password': (context) => const ResetPasswordPage(),
-        '/add-exam': (context) => AddExam(), // Route to AddExam widget
+        '/add-exam': (context) => AddExam(),
+        '/profile': (context) => ProfileWidget()
       },
       debugShowCheckedModeBanner: false,
     );

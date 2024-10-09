@@ -1,19 +1,36 @@
+// import 'dart:nativewrappers/_internal/vm/lib/internal_patch.dart';
+
 import 'package:myapp/data/AnswerData.dart';
+import 'package:myapp/data/AttemptData.dart';
 import 'package:myapp/model/Answer.dart';
+import 'package:myapp/model/Attempt.dart';
 import 'package:myapp/model/Result.dart';
 import 'package:myapp/model/SelectedAnswer.dart';
 import 'package:myapp/model/dto/QuestionResponse.dart';
 
 class CalculateScoreService {
-  Future<Result> calculateScore( 
-      List<SelectedAnswer> selectedAnswers, List<QuestionResponse> questions) async { 
-    AnswerData answerData = AnswerData.getInstance();
+  Future<Result> calculateScore(
+      Attempt
+          attempt /*List<SelectedAnswer> selectedAnswers, List<QuestionResponse> questions*/) async {
+    // if(attempt.result != null) return attempt.result;
 
-    List<Answer> answers = await Future.wait( 
-        questions.map((question) => answerData.getAnswerByQuestionId(question.questionId))
-    ).then((values) => values.whereType<Answer>().toList());
+    try {
+      Result? result1 = attempt.result;
+    } catch (e) {
+      AnswerData answerData = AnswerData.getInstance();
 
-    return _calculateScore(selectedAnswers, answers);
+      List<Answer> answers = await Future.wait(attempt.questions.map(
+              (question) =>
+                  answerData.getAnswerByQuestionId(question.questionId)))
+          .then((values) => values.whereType<Answer>().toList());
+
+      Result result = _calculateScore(attempt.selectedAnswers, answers);
+      attempt.result = result;
+      AttemptData.getInstance().save(attempt);
+      return result;
+    }
+
+    return attempt.result;
   }
 
   Result _calculateScore(
@@ -30,7 +47,8 @@ class CalculateScoreService {
 
     for (var selectedAnswer in selectedAnswers) {
       String? correctAnswer = correctAnswerMap[selectedAnswer.questionId];
-      if (correctAnswer != null && selectedAnswer.isCorrectAnswer(correctAnswer)) {
+      if (correctAnswer != null &&
+          selectedAnswer.isCorrectAnswer(correctAnswer)) {
         correctNumbers++;
       } else if (selectedAnswer.selectedAnswer == '') {
         unanswerNumbers++;
@@ -39,7 +57,7 @@ class CalculateScoreService {
       }
     }
 
-    return Result(
-        "$correctNumbers/30", correctNumbers, incorrectNumbers, unanswerNumbers);
+    return Result("$correctNumbers/30", correctNumbers, incorrectNumbers,
+        unanswerNumbers);
   }
 }
